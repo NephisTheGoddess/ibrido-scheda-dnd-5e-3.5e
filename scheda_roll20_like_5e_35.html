@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scheda D&D 5e (stile Roll20) – Skill 3.5 + TS Tempra/Riflessi/Volontà</title>
+<style>
+:root{
+  --bg:#0b0f14; --card:#11161d; --line:#243141; --text:#e8eef6; --muted:#94a3b8; --accent:#60a5fa; --accent-2:#22d3ee;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+.container{max-width:1200px;margin:20px auto;padding:0 16px}
+.header{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+.header .field{min-width:220px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:12px;color:var(--muted)}
+.field input,.field textarea, select{border:1px solid var(--line);border-radius:10px;padding:8px;background:var(--card);color:var(--text);outline:none}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 2px 8px rgb(0 0 0 / 30%);}
+.card h3{margin:0;padding:10px 14px;border-bottom:1px solid var(--line);background:#0f1520;border-radius:14px 14px 0 0;font-size:13px;color:#cfe1ff}
+.card .content{padding:12px}
+.grid{display:grid;gap:12px}
+.cols-3{grid-template-columns:280px 1fr 340px}
+@media (max-width:1100px){.cols-3{grid-template-columns:1fr}}
+.abilities{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.ability{border:1px solid var(--line);border-radius:12px;padding:8px;text-align:center;background:#0d131c}
+.ability .abbr{font-size:11px;color:var(--muted)}
+.ability input{width:100%;text-align:center;font-size:18px;font-weight:700;background:transparent;color:var(--text);border:1px dashed var(--line);border-radius:8px;padding:6px}
+.small{font-size:12px;color:var(--muted)}
+.badge{display:inline-block;border:1px solid var(--line);padding:4px 8px;border-radius:999px;background:#0d131c;min-width:48px;text-align:center}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between}
+.row .total{width:48px;text-align:right;font-weight:700}
+.skill{display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:6px;background:#0d131c}
+.skill input[type="text"]{border:0;border-left:1px dashed var(--line);padding-left:8px;flex:1;background:transparent;color:var(--text)}
+.skill .roller{border:1px solid var(--line);border-radius:8px;padding:4px 8px;cursor:pointer;background:#0b1220}
+button,.btn{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#001018;border:0;border-radius:10px;padding:10px 12px;font-weight:700;cursor:pointer}
+.btn.secondary{background:#0b1220;color:var(--text);border:1px solid var(--line);font-weight:500}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+.tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.tab{padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:#0d131c;color:var(--muted);cursor:pointer}
+.tab.active{background:linear-gradient(135deg,#1f2937,#0b1220);color:#cfe1ff}
+.section{display:none}
+.section.active{display:block}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+input[type="checkbox"]{accent-color:#60a5fa}
+table.simple{width:100%;border-collapse:separate;border-spacing:0 6px}
+table.simple th{font-size:12px;color:var(--muted);text-align:left}
+table.simple td{background:#0d131c;border:1px solid var(--line);padding:6px;border-radius:8px}
+.two-col{columns:2;column-gap:10px}
+.two-col .skill{break-inside:avoid;margin-bottom:8px}
+.roll-log{font-size:12px;color:#cfe1ff;background:#0d131c;border:1px solid var(--line);border-radius:10px;padding:8px;max-height:160px;overflow:auto}
+@media print{ .toolbar,.tabs{display:none!important} body{background:white;color:black} .card,.ability,.skill{break-inside:avoid} }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="tabs">
+    <div class="tab active" data-tab="core">Base</div>
+    <div class="tab" data-tab="spells">Incantesimi</div>
+    <div class="tab" data-tab="bio">Bio & Note</div>
+  </div>
+
+  <!-- CORE -->
+  <div id="core" class="section active">
+    <div class="header">
+      <div class="field"><label>Nome Personaggio</label><input id="name"></div>
+      <div class="field"><label>Classe & Livello</label><input id="classLevel"></div>
+      <div class="field"><label>Razza</label><input id="race"></div>
+      <div class="field"><label>Background</label><input id="background"></div>
+      <div class="field"><label>Allineamento</label><input id="alignment"></div>
+      <div class="field"><label>Giocatore</label><input id="player"></div>
+      <div class="field"><label>Punti Esperienza</label><input id="xp"></div>
+    </div>
+
+    <div class="grid cols-3">
+      <!-- colonna sinistra -->
+      <div class="col-left">
+        <div class="card">
+          <h3>Caratteristiche</h3>
+          <div class="content">
+            <div class="abilities">
+              <div class="ability"><div class="abbr">Forza</div><input id="FOR" type="number" value="10"><div class="small">mod <span id="modFOR">+0</span></div></div>
+              <div class="ability"><div class="abbr">Destrezza</div><input id="DES" type="number" value="10"><div class="small">mod <span id="modDES">+0</span></div></div>
+              <div class="ability"><div class="abbr">Costituzione</div><input id="COS" type="number" value="10"><div class="small">mod <span id="modCOS">+0</span></div></div>
+              <div class="ability"><div class="abbr">Intelligenza</div><input id="INT" type="number" value="10"><div class="small">mod <span id="modINT">+0</span></div></div>
+              <div class="ability"><div class="abbr">Saggezza</div><input id="SAG" type="number" value="10"><div class="small">mod <span id="modSAG">+0</span></div></div>
+              <div class="ability"><div class="abbr">Carisma</div><input id="CAR" type="number" value="10"><div class="small">mod <span id="modCAR">+0</span></div></div>
+            </div>
+            <div class="toolbar">
+              <div class="field" style="width:140px"><label>Bonus Competenza</label><input id="prof" type="number" value="2"></div>
+              <div class="field" style="width:120px"><label>CA</label><input id="ac" type="number" value="10"></div>
+              <div class="field" style="width:120px"><label>Iniziativa</label><input id="initiative" type="number" value="0"></div>
+              <div class="field" style="width:120px"><label>Velocità</label><input id="speed" value="9 m"></div>
+              <div class="field" style="width:120px"><label>Ispirazione</label><input id="insp" value=""></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Tiri Salvezza (3.5)</h3>
+          <div class="content">
+            <div class="row">
+              <label><input type="checkbox" id="save_fort_prof"> Tempra (COS)</label>
+              <span class="badge" id="save_fort">+0</span>
+              <button class="btn secondary roller" data-roll="save:fort">Tira</button>
+            </div>
+            <div class="row">
+              <label><input type="checkbox" id="save_ref_prof"> Riflessi (DES)</label>
+              <span class="badge" id="save_ref">+0</span>
+              <button class="btn secondary roller" data-roll="save:ref">Tira</button>
+            </div>
+            <div class="row">
+              <label><input type="checkbox" id="save_will_prof"> Volontà (SAG)</label>
+              <span class="badge" id="save_will">+0</span>
+              <button class="btn secondary roller" data-roll="save:will">Tira</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Valori Passivi & Risorse</h3>
+          <div class="content kv">
+            <div class="field"><label>Percezione Passiva</label><input id="ppassive" type="number" value="10"></div>
+            <div class="field"><label>Dadi Vita</label><input id="hitdice" placeholder="es. 2d8"></div>
+            <div class="field"><label>PF Max</label><input id="hpMax" type="number" value="0"></div>
+            <div class="field"><label>PF Attuali</label><input id="hpCurr" type="number" value="0"></div>
+            <div class="field"><label>PF Temporanei</label><input id="hpTemp" type="number" value="0"></div>
+            <div class="field"><label>Death Saves</label><input id="deathsaves" placeholder="✓✓ / ✗"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- colonna centrale -->
+      <div class="col-center">
+        <div class="card">
+          <h3>Abilità (3.5) – stile 5e</h3>
+          <div class="content">
+            <div class="toolbar">
+              <button class="btn secondary" id="toggleExpertise">Toggle Expertise (seleziona skill)</button>
+              <span class="small">Totale = mod stat + competenza (o doppia competenza)</span>
+            </div>
+            <div class="two-col" id="skillsContainer"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Log Tiri</h3>
+          <div class="content">
+            <div class="roll-log" id="rollLog"></div>
+            <div class="toolbar">
+              <button class="btn secondary" id="clearLog">Pulisci log</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- colonna destra -->
+      <div class="col-right">
+        <div class="card">
+          <h3>Attacchi & Incantesimi</h3>
+          <div class="content">
+            <table class="simple">
+              <thead><tr><th>Nome</th><th>Bonus</th><th>Danni/Tipo</th><th></th></tr></thead>
+              <tbody id="attacks"></tbody>
+            </table>
+            <div class="toolbar">
+              <button class="btn secondary" id="addAttack">+ Aggiungi</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Monete</h3>
+          <div class="content kv">
+            <div class="field"><label>PP</label><input id="pp" type="number" value="0"></div>
+            <div class="field"><label>PO</label><input id="gp" type="number" value="0"></div>
+            <div class="field"><label>PE</label><input id="ep" type="number" value="0"></div>
+            <div class="field"><label>PA</label><input id="sp" type="number" value="0"></div>
+            <div class="field"><label>RC</label><input id="cp" type="number" value="0"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Azioni Rapide</h3>
+          <div class="content toolbar">
+            <button class="btn" id="shortRest">Riposo breve</button>
+            <button class="btn" id="longRest">Riposo lungo</button>
+            <button class="btn secondary" id="printBtn">Stampa / PDF</button>
+            <button class="btn secondary" id="exportBtn">Esporta JSON</button>
+            <label class="btn secondary" for="importFile">Importa JSON</label>
+            <input id="importFile" type="file" accept="application/json" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SPELLS -->
+  <div id="spells" class="section">
+    <div class="grid" style="grid-template-columns:1fr 1fr 1fr; gap:12px">
+      <div class="card"><h3>Dati Incantesimi</h3><div class="content">
+        <div class="field"><label>Classe Incantatore</label><input id="spell_class"></div>
+        <div class="field"><label>Caratteristica</label>
+          <select id="spell_ability">
+            <option value="SAG">Saggezza</option><option value="INT">Intelligenza</option><option value="CAR">Carisma</option>
+          </select>
+        </div>
+        <div class="field"><label>CD TS Incantesimi</label><input id="spell_save_dc" type="number" value="8"></div>
+        <div class="field"><label>Bonus Attacco Incantesimi</label><input id="spell_atk_bonus" type="number" value="0"></div>
+      </div></div>
+      <div class="card"><h3>Slot per Livello</h3><div class="content" id="slots"></div></div>
+      <div class="card"><h3>Note Magia</h3><div class="content"><textarea id="spell_notes" placeholder="Appunti, focus, componenti, rituali..."></textarea></div></div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <h3>Elenco Incantesimi</h3>
+      <div class="content" id="spellLists"></div>
+    </div>
+  </div>
+
+  <!-- BIO -->
+  <div id="bio" class="section">
+    <div class="grid" style="grid-template-columns:1fr 1fr; gap:12px">
+      <div class="card"><h3>Equipaggiamento</h3><div class="content"><textarea id="equipment" placeholder="Armi, armature, strumenti, oggetti..."></textarea></div></div>
+      <div class="card"><h3>Tratti & Capacità</h3><div class="content"><textarea id="features" placeholder="Tratti razziali, privileggi di classe, talenti..."></textarea></div></div>
+      <div class="card"><h3>Background</h3><div class="content"><textarea id="bio_text" placeholder="Storia del personaggio, legami, ideali, difetti..."></textarea></div></div>
+      <div class="card"><h3>PNG / Appunti</h3><div class="content"><textarea id="notes" placeholder="Contatti, PNG, luoghi, missioni..."></textarea></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// --- TABS ---
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  t.classList.add('active');
+  document.getElementById(t.dataset.tab).classList.add('active');
+}));
+
+// --- UTILS ---
+const abilMod = (n) => Math.floor((Number(n||0) - 10) / 2);
+const fmt = (n) => (n>=0? "+"+n : ""+n);
+const rollD20 = () => 1 + Math.floor(Math.random()*20);
+
+// --- STATE (persistenza) ---
+const FIELDS = [
+  "name","classLevel","race","background","alignment","player","xp",
+  "FOR","DES","COS","INT","SAG","CAR","prof","ac","initiative","speed","insp",
+  "ppassive","hitdice","hpMax","hpCurr","hpTemp","deathsaves",
+  "pp","gp","ep","sp","cp",
+  "spell_class","spell_ability","spell_save_dc","spell_atk_bonus","spell_notes",
+  "equipment","features","bio_text","notes"
+];
+const SAVE_CHECKS = ["save_fort_prof","save_ref_prof","save_will_prof"];
+
+function saveAll(){
+  const data = {};
+  FIELDS.forEach(id => data[id] = document.getElementById(id)?.value ?? "");
+  SAVE_CHECKS.forEach(id => data[id] = document.getElementById(id)?.checked ?? false);
+  // attacks
+  data.attacks = Array.from(document.querySelectorAll('#attacks tr')).map(tr=>({
+    name: tr.querySelector('[data-f=nm]').textContent,
+    bonus: tr.querySelector('[data-f=bn]').textContent,
+    dmg: tr.querySelector('[data-f=dm]').textContent
+  }));
+  // skills
+  data.skills = Array.from(document.querySelectorAll('[data-skill]')).map(n=>({
+    key:n.dataset.skill, prof:n.querySelector('[data-f=prof]').checked,
+    exp:n.querySelector('[data-f=exp]').checked, name:n.querySelector('[data-f=name]').value
+  }));
+  // slots & spell lists
+  data.slots = Array.from(document.querySelectorAll('[data-slot]')).map(n=>({lvl:n.dataset.slot, tot:n.querySelector('[data-f=tot]').value, used:n.querySelector('[data-f=used]').value}));
+  data.spellLists = Array.from(document.querySelectorAll('[data-spell-list]')).map(n=>({lvl:n.dataset.spellList, txt:n.value}));
+  localStorage.setItem('sheet-5e-roll20', JSON.stringify(data));
+}
+function loadAll(){
+  const raw = localStorage.getItem('sheet-5e-roll20'); if(!raw) return;
+  try{
+    const d = JSON.parse(raw);
+    FIELDS.forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = d[id] ?? document.getElementById(id).value; });
+    SAVE_CHECKS.forEach(id => { if(document.getElementById(id)) document.getElementById(id).checked = !!d[id]; });
+    // attacks
+    if(d.attacks) { d.attacks.forEach(addAttackRow); }
+    // skills
+    if(d.skills){ d.skills.forEach(s=>{
+      const el = document.querySelector(`[data-skill="${s.key}"]`);
+      if(el){ el.querySelector('[data-f=prof]').checked = !!s.prof;
+              el.querySelector('[data-f=exp]').checked = !!s.exp;
+              el.querySelector('[data-f=name]').value = s.name || el.querySelector('[data-f=name]').value; }
+    })}
+    // slots
+    if(d.slots){ d.slots.forEach(s=>{
+      const row = document.querySelector(`[data-slot="${s.lvl}"]`);
+      if(row){ row.querySelector('[data-f=tot]').value = s.tot || ""; row.querySelector('[data-f=used]').value = s.used || ""; }
+    })}
+    // spell lists
+    if(d.spellLists){ d.spellLists.forEach(s=>{
+      const ta = document.querySelector(`[data-spell-list="${s.lvl}"]`);
+      if(ta){ ta.value = s.txt || ""; }
+    })}
+  }catch(e){}
+}
+
+// --- ABILITÀ 3.5 ---
+const SKILLS = [
+  ["Acrobazia","DES"],["Addestrare Animali","CAR"],["Aprire Serrature","DES"],
+  ["Artigianato (____)","INT"],["Artigianato (____)","INT"],["Artigianato (____)","INT"],
+  ["Ascoltare","SAG"],["Camuffare","CAR"],["Cavalcare","DES"],["Cercare","INT"],["Concentrazione","COS"],
+  ["Conoscenze (Arcane)","INT"],["Conoscenze (Dungeon)","INT"],["Conoscenze (Geografia)","INT"],
+  ["Conoscenze (Natura)","INT"],["Conoscenze (Nobiltà e Regni)","INT"],["Conoscenze (Piani)","INT"],
+  ["Decifrare Scritture","INT"],["Diplomazia","CAR"],["Disattivare Congegni","DES"],["Equilibrio","DES"],
+  ["Falsificare","INT"],["Fuga Artistica","DES"],["Guarire","SAG"],["Intimidire","CAR"],["Intuizione","SAG"],
+  ["Muoversi Silenziosamente","DES"],["Nascondersi","DES"],["Nuotare","FOR"],["Osservare","SAG"],
+  ["Perform/Intrattenere (____)","CAR"],["Perform/Intrattenere (____)","CAR"],["Perform/Intrattenere (____)","CAR"],
+  ["Professione (____)","SAG"],["Professione (____)","SAG"],["Professione (____)","SAG"],
+  ["Raccogliere Informazioni","CAR"],["Rapidità di Mano","DES"],["Saltare","FOR"],["Sapienza Magica","INT"],
+  ["Scalare","FOR"],["Sopravvivenza","SAG"],["Utilizzare Corde","DES"],["Utilizzare Oggetti Magici","CAR"],["Valutare","INT"]
+];
+function buildSkills(){
+  const cont = document.getElementById('skillsContainer'); cont.innerHTML='';
+  SKILLS.forEach((sk, idx)=>{
+    const key = 'sk'+idx;
+    const row = document.createElement('div'); row.className='skill'; row.dataset.skill=key;
+    row.innerHTML = `
+      <input type="checkbox" data-f="prof" title="competenza">
+      <input type="checkbox" data-f="exp" title="expertise (doppia competenza)">
+      <input type="text" data-f="name" value="${sk[0]}">
+      <span class="small">${sk[1]} <span data-f="mod">+0</span></span>
+      <span class="total" data-f="tot">+0</span>
+      <button class="roller btn secondary" data-roll="skill:${key}">Tira</button>
+    `;
+    cont.appendChild(row);
+  });
+}
+
+// expertise toggle helper
+let expertiseMode = false;
+document.getElementById('toggleExpertise').addEventListener('click', ()=>{
+  expertiseMode = !expertiseMode;
+  alert(expertiseMode ? 'Seleziona le skill con expertise (spunta la seconda casella).' : 'Expertise disattivata.');
+});
+
+// --- ATTACKS ---
+function addAttackRow(a){
+  const tbody = document.getElementById('attacks');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td contenteditable="true" data-f="nm">${(a&&a.name)||''}</td>
+    <td contenteditable="true" data-f="bn">${(a&&a.bonus)||''}</td>
+    <td contenteditable="true" data-f="dm">${(a&&a.dmg)||''}</td>
+    <td><button class="btn secondary" onclick="this.closest('tr').remove(); saveAll()">✕</button></td>
+  `;
+  tbody.appendChild(tr);
+}
+document.getElementById('addAttack').addEventListener('click', ()=>addAttackRow());
+
+// --- SPELLS ---
+function buildSpells(){
+  const slots = document.getElementById('slots');
+  for(let lvl=1; lvl<=9; lvl++){
+    const row = document.createElement('div'); row.className='row'; row.dataset.slot=String(lvl);
+    row.innerHTML = `<div class="small">Livello ${lvl}</div>
+    <input data-f="tot" placeholder="Slot totali" style="width:120px">
+    <input data-f="used" placeholder="Slot usati" style="width:120px">`;
+    slots.appendChild(row);
+  }
+  const lists = document.getElementById('spellLists');
+  for(let lvl=0; lvl<=9; lvl++){
+    const card = document.createElement('div'); card.className='card'; card.style.marginBottom='8px';
+    card.innerHTML = `<h3>${lvl===0?'Trucchi (0)':'Livello '+lvl}</h3>
+      <div class="content"><textarea data-spell-list="${lvl}" placeholder="Elenco incantesimi di livello ${lvl}..."></textarea></div>`;
+    lists.appendChild(card);
+  }
+}
+
+// --- ROLLER & CALCOLI ---
+function mods(){
+  const m = {
+    FOR: Math.floor(((+document.getElementById('FOR').value||10)-10)/2),
+    DES: Math.floor(((+document.getElementById('DES').value||10)-10)/2),
+    COS: Math.floor(((+document.getElementById('COS').value||10)-10)/2),
+    INT: Math.floor(((+document.getElementById('INT').value||10)-10)/2),
+    SAG: Math.floor(((+document.getElementById('SAG').value||10)-10)/2),
+    CAR: Math.floor(((+document.getElementById('CAR').value||10)-10)/2),
+  };
+  document.getElementById('modFOR').textContent = fmt(m.FOR);
+  document.getElementById('modDES').textContent = fmt(m.DES);
+  document.getElementById('modCOS').textContent = fmt(m.COS);
+  document.getElementById('modINT').textContent = fmt(m.INT);
+  document.getElementById('modSAG').textContent = fmt(m.SAG);
+  document.getElementById('modCAR').textContent = fmt(m.CAR);
+  return m;
+}
+function recompute(){
+  const m = mods();
+  const prof = +document.getElementById('prof').value||0;
+  // saves
+  const fort = m.COS + (document.getElementById('save_fort_prof').checked ? prof : 0);
+  const ref  = m.DES + (document.getElementById('save_ref_prof').checked  ? prof : 0);
+  const will = m.SAG + (document.getElementById('save_will_prof').checked ? prof : 0);
+  document.getElementById('save_fort').textContent = fmt(fort);
+  document.getElementById('save_ref').textContent = fmt(ref);
+  document.getElementById('save_will').textContent = fmt(will);
+  // skills
+  const mapStat = {"FOR":0,"DES":1,"COS":2,"INT":3,"SAG":4,"CAR":5};
+  const statFor = ["FOR","DES","COS","INT","SAG","CAR"];
+  document.querySelectorAll('[data-skill]').forEach((row, i)=>{
+    const name = row.querySelector('[data-f=name]').value;
+    // get stat from template SKILLS
+    const base = SKILLS[i][1];
+    const baseMod = m[base]||0;
+    row.querySelector('[data-f=mod]').textContent = fmt(baseMod);
+    const profOn = row.querySelector('[data-f=prof]').checked;
+    const expOn = row.querySelector('[data-f=exp]').checked;
+    const total = baseMod + (profOn ? (expOn ? 2*prof : prof) : 0);
+    row.querySelector('[data-f=tot]').textContent = fmt(total);
+  });
+}
+function log(text){
+  const log = document.getElementById('rollLog');
+  const time = new Date().toLocaleTimeString();
+  log.innerHTML = `<div>[${time}] ${text}</div>` + log.innerHTML;
+}
+document.addEventListener('click', (e)=>{
+  const btn = e.target.closest('.roller'); if(!btn) return;
+  const what = btn.dataset.roll;
+  const d20 = rollD20();
+  const prof = +document.getElementById('prof').value||0;
+  const m = mods();
+  if(what.startsWith('save:')){
+    const t = what.split(':')[1];
+    let base = 0, label='';
+    if(t==='fort'){ base = m.COS + (document.getElementById('save_fort_prof').checked?prof:0); label='Tempra'; }
+    if(t==='ref'){ base = m.DES + (document.getElementById('save_ref_prof').checked?prof:0); label='Riflessi'; }
+    if(t==='will'){ base = m.SAG + (document.getElementById('save_will_prof').checked?prof:0); label='Volontà'; }
+    const tot = d20 + base;
+    log(`Tiro Salvezza ${label}: d20 (${d20}) + ${fmt(base)} = **${tot}**`);
+  }
+  if(what.startsWith('skill:')){
+    const key = what.split(':')[1];
+    const row = document.querySelector(`[data-skill="${key}"]`);
+    const name = row.querySelector('[data-f=name]').value;
+    const modVal = parseInt(row.querySelector('[data-f=mod]').textContent);
+    const profOn = row.querySelector('[data-f=prof]').checked;
+    const expOn = row.querySelector('[data-f=exp]').checked;
+    const add = (profOn ? (expOn ? 2*prof : prof) : 0) + modVal;
+    const tot = d20 + add;
+    log(`Abilità ${name}: d20 (${d20}) + ${fmt(add)} = **${tot}**`);
+  }
+});
+
+// --- EXPORT/IMPORT & PRINT ---
+document.getElementById('exportBtn').addEventListener('click', ()=>{
+  saveAll();
+  const data = localStorage.getItem('sheet-5e-roll20') || '{}';
+  const blob = new Blob([data], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const name = (document.getElementById('name').value || 'personaggio').replace(/\s+/g,'_');
+  a.href=url; a.download = `scheda_roll20_like_${name}.json`; a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById('importFile').addEventListener('change', e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ev=>{ try{ localStorage.setItem('sheet-5e-roll20', String(ev.target.result)); location.reload(); } catch(e){ alert('File non valido'); } };
+  r.readAsText(f);
+});
+document.getElementById('printBtn').addEventListener('click', ()=>window.print());
+
+// Rest buttons
+document.getElementById('shortRest').addEventListener('click', ()=>{
+  document.getElementById('hpTemp').value = 0;
+  saveAll(); recompute();
+});
+document.getElementById('longRest').addEventListener('click', ()=>{
+  document.getElementById('hpTemp').value = 0;
+  // reset death saves
+  document.getElementById('deathsaves').value = '';
+  saveAll(); recompute();
+});
+
+// INIT
+function init(){
+  buildSkills();
+  buildSpells();
+  // attacks default
+  if(!localStorage.getItem('sheet-5e-roll20')){
+    addAttackRow({name:'Spada lunga', bonus:'+5', dmg:'1d8+3 tagliente'});
+  }
+  loadAll();
+  recompute();
+  document.addEventListener('input', e=>{
+    if(e.target.matches('input, textarea, select, [contenteditable=\"true\"]')){ recompute(); saveAll(); }
+  });
+  document.addEventListener('change', e=>{
+    if(e.target.type==='checkbox'){ recompute(); saveAll(); }
+  });
+  document.getElementById('clearLog').addEventListener('click', ()=>{ document.getElementById('rollLog').innerHTML=''; });
+}
+init();
+</script>
+</body>
+</html>
