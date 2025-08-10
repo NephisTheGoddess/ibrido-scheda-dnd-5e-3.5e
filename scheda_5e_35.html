@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Scheda D&D 5e (abilità 3.5 + TS Tempra/Riflessi/Volontà)</title>
+<style>
+  :root{
+    --bg:#f7f7f8; --card:#ffffff; --line:#e5e7eb; --text:#0f172a; --muted:#6b7280; --accent:#111827;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  .container{max-width:1100px;margin:24px auto;padding:0 16px}
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+  button, .btn{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:10px 12px;cursor:pointer}
+  .btn.secondary{background:transparent;color:var(--text);border:1px solid var(--line)}
+  input[type="file"]{display:none}
+  .grid{display:grid;gap:12px}
+  .grid.cols-2{grid-template-columns:1fr 1fr}
+  .grid.cols-3{grid-template-columns:1fr 1fr 1fr}
+  .grid.cols-4{grid-template-columns:1fr 1fr 1fr 1fr}
+  @media (max-width:900px){.grid.cols-4{grid-template-columns:1fr 1fr}}
+  @media (max-width:700px){.grid.cols-2,.grid.cols-3{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 2px 8px rgb(0 0 0 / 6%)}
+  .card h3{margin:0;padding:10px 14px;border-bottom:1px solid var(--line);background:#f3f4f6;border-radius:16px 16px 0 0;font-size:14px}
+  .card .content{padding:12px}
+  .field{display:flex;flex-direction:column;gap:6px}
+  .field label{font-size:12px;color:var(--muted)}
+  .field input,.field textarea{border:1px solid var(--line);border-radius:10px;padding:8px;background:#fff;outline:none}
+  .small{font-size:12px;color:var(--muted)}
+  .abilities{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .ability{border:1px solid var(--line);border-radius:12px;padding:8px;background:#fff;text-align:center}
+  .ability .abbr{font-size:11px;color:var(--muted)}
+  .ability input{width:100%;text-align:center;font-size:18px;font-weight:700}
+  .badge{display:inline-block;border:1px solid var(--line);padding:4px 8px;border-radius:999px;background:#fff}
+  .row{display:flex;gap:8px;align-items:center;justify-content:space-between}
+  .row .total{width:48px;text-align:right;font-weight:700}
+  .skill{display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:6px;background:#fff}
+  .skill input[type="text"]{border:0;border-left:1px dashed var(--line);padding-left:8px;flex:1;background:transparent}
+  .two-columns{columns:2;column-gap:12px}
+  .two-columns .skill{break-inside:avoid;margin-bottom:8px}
+  textarea{min-height:140px;resize:vertical}
+  .money{display:flex;gap:8px;flex-wrap:wrap}
+  .money .field{width:100px}
+  table.simple{width:100%;border-collapse:separate;border-spacing:0 6px}
+  table.simple th{font-size:12px;color:var(--muted);text-align:left}
+  table.simple td{background:#fff;border:1px solid var(--line);padding:6px;border-radius:8px}
+  @media print{
+    body{background:#fff}
+    .toolbar{display:none!important}
+    .card{break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="toolbar">
+      <button id="printBtn">Stampa / Esporta PDF</button>
+      <button class="btn secondary" id="exportBtn">Esporta JSON</button>
+      <label class="btn secondary" for="importFile">Importa JSON</label>
+      <input id="importFile" type="file" accept="application/json" />
+      <span class="small">I dati si salvano automaticamente nel tuo browser.</span>
+    </div>
+
+    <!-- Header -->
+    <div class="grid cols-4">
+      <div class="card"><h3>Dettagli</h3><div class="content grid cols-2">
+        <div class="field"><label>Nome Personaggio</label><input id="name"/></div>
+        <div class="field"><label>Classe & Livello</label><input id="classLevel"/></div>
+        <div class="field"><label>Razza</label><input id="race"/></div>
+        <div class="field"><label>Background</label><input id="background"/></div>
+        <div class="field"><label>Allineamento</label><input id="alignment"/></div>
+        <div class="field"><label>Giocatore</label><input id="player"/></div>
+        <div class="field"><label>Punti Esperienza</label><input id="xp"/></div>
+      </div></div>
+
+      <div class="card"><h3>Caratteristiche (5e)</h3><div class="content">
+        <div class="abilities">
+          <div class="ability"><div class="abbr">Forza</div><input id="FOR" type="number" value="10"><div class="small">mod <span id="modFOR">+0</span></div></div>
+          <div class="ability"><div class="abbr">Destrezza</div><input id="DES" type="number" value="10"><div class="small">mod <span id="modDES">+0</span></div></div>
+          <div class="ability"><div class="abbr">Costituzione</div><input id="COS" type="number" value="10"><div class="small">mod <span id="modCOS">+0</span></div></div>
+          <div class="ability"><div class="abbr">Intelligenza</div><input id="INT" type="number" value="10"><div class="small">mod <span id="modINT">+0</span></div></div>
+          <div class="ability"><div class="abbr">Saggezza</div><input id="SAG" type="number" value="10"><div class="small">mod <span id="modSAG">+0</span></div></div>
+          <div class="ability"><div class="abbr">Carisma</div><input id="CAR" type="number" value="10"><div class="small">mod <span id="modCAR">+0</span></div></div>
+        </div>
+        <div class="row" style="margin-top:8px;gap:12px;flex-wrap:wrap">
+          <div class="field" style="width:140px"><label>Bonus Competenza</label><input id="prof" type="number" value="2"></div>
+          <div class="field" style="width:120px"><label>CA</label><input id="ac" type="number" value="10"></div>
+          <div class="field" style="width:120px"><label>Iniziativa</label><input id="initiative" type="number" value="0"></div>
+          <div class="field" style="width:120px"><label>Velocità</label><input id="speed" value="9 m"></div>
+          <div class="field" style="width:140px"><label>PF Max</label><input id="hpMax" type="number" value="0"></div>
+          <div class="field" style="width:140px"><label>PF Attuali</label><input id="hpCurr" type="number" value="0"></div>
+          <div class="field" style="width:140px"><label>PF Temporanei</label><input id="hpTemp" type="number" value="0"></div>
+        </div>
+      </div></div>
+
+      <div class="card"><h3>Tiri Salvezza (3.5)</h3><div class="content">
+        <div class="row"><label><input type="checkbox" id="save_fort_prof"> Tempra (COS)</label><span class="badge" id="save_fort">+0</span></div>
+        <div class="row"><label><input type="checkbox" id="save_ref_prof"> Riflessi (DES)</label><span class="badge" id="save_ref">+0</span></div>
+        <div class="row"><label><input type="checkbox" id="save_will_prof"> Volontà (SAG)</label><span class="badge" id="save_will">+0</span></div>
+      </div></div>
+
+      <div class="card"><h3>Valori Passivi & Monete</h3><div class="content">
+        <div class="field"><label>Percezione Passiva (SAG)</label><input id="ppassive" type="number" value="10"></div>
+        <div class="money" style="margin-top:8px">
+          <div class="field"><label>PP</label><input id="pp" type="number" value="0"></div>
+          <div class="field"><label>PO</label><input id="gp" type="number" value="0"></div>
+          <div class="field"><label>PE</label><input id="ep" type="number" value="0"></div>
+          <div class="field"><label>PA</label><input id="sp" type="number" value="0"></div>
+          <div class="field"><label>RC</label><input id="cp" type="number" value="0"></div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- Abilità 3.5 -->
+    <div class="card" style="margin-top:12px">
+      <h3>Abilità (3.5) – stile 5e: checkbox competenza + totale (niente gradi/bonus vari)</h3>
+      <div class="content two-columns" id="skillsContainer"></div>
+    </div>
+
+    <!-- Attacchi & Incantesimi / Equipaggiamento / Tratti -->
+    <div class="grid cols-3" style="margin-top:12px">
+      <div class="card"><h3>Attacchi & Incantesimi</h3><div class="content">
+        <table class="simple">
+          <thead><tr><th>Nome</th><th>Bonus Attacco</th><th>Danni/Tipo</th></tr></thead>
+          <tbody id="attacks">
+            <tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+            <tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+            <tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+            <tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+            <tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+          </tbody>
+        </table>
+      </div></div>
+
+      <div class="card"><h3>Equipaggiamento</h3><div class="content">
+        <textarea id="equipment" placeholder="Armi, armature, oggetti, capacità, ecc."></textarea>
+      </div></div>
+
+      <div class="card"><h3>Tratti & Abilità</h3><div class="content">
+        <textarea id="features" placeholder="Tratti razziali, talenti, capacità di classe..."></textarea>
+      </div></div>
+    </div>
+
+    <!-- Incantesimi (riassunto semplice) -->
+    <div class="card" style="margin-top:12px">
+      <h3>Incantesimi (riassunto)</h3>
+      <div class="content grid cols-4">
+        <div class="field"><label>Classe Incantatore</label><input id="spell_class"></div>
+        <div class="field"><label>Caratteristica Incantesimi</label><input id="spell_ability" placeholder="SAG/INT/CAR"></div>
+        <div class="field"><label>CD TS Incantesimi</label><input id="spell_save_dc" type="number" value="8"></div>
+        <div class="field"><label>Bonus Attacco Incantesimi</label><input id="spell_atk_bonus" type="number" value="0"></div>
+        <div class="field"><label>Trucchi (0)</label><input id="spells_0"></div>
+        <div class="field"><label>Livello 1</label><input id="spells_1"></div>
+        <div class="field"><label>Livello 2</label><input id="spells_2"></div>
+        <div class="field"><label>Livello 3</label><input id="spells_3"></div>
+        <div class="field"><label>Livello 4</label><input id="spells_4"></div>
+        <div class="field"><label>Livello 5</label><input id="spells_5"></div>
+        <div class="field"><label>Livello 6</label><input id="spells_6"></div>
+        <div class="field"><label>Livello 7</label><input id="spells_7"></div>
+        <div class="field"><label>Livello 8</label><input id="spells_8"></div>
+        <div class="field"><label>Livello 9</label><input id="spells_9"></div>
+      </div>
+    </div>
+
+    <p class="small" style="margin-top:12px">Versione statica HTML. Calcoli auto: mod caratteristiche, salvezze 3.5, abilità 3.5 (mod+competenza). Salvataggio automatico nel browser.</p>
+  </div>
+
+<script>
+const abilMod = (n) => Math.floor((Number(n||0) - 10) / 2);
+const fmt = (n) => (n>=0? "+"+n : ""+n);
+const FIELDS = [
+  "name","classLevel","race","background","alignment","player","xp",
+  "FOR","DES","COS","INT","SAG","CAR","prof","ac","initiative","speed","hpMax","hpCurr","hpTemp",
+  "ppassive","pp","gp","ep","sp","cp",
+  "equipment","features",
+  "spell_class","spell_ability","spell_save_dc","spell_atk_bonus",
+  "spells_0","spells_1","spells_2","spells_3","spells_4","spells_5","spells_6","spells_7","spells_8","spells_9"
+];
+const SAVE_CHECKS = ["save_fort_prof","save_ref_prof","save_will_prof"];
+const SKILLS = [
+  ["Acrobazia","DES"],["Addestrare Animali","CAR"],["Aprire Serrature","DES"],
+  ["Artigianato (____)","INT"],["Artigianato (____)","INT"],["Artigianato (____)","INT"],
+  ["Ascoltare","SAG"],["Camuffare","CAR"],["Cavalcare","DES"],["Cercare","INT"],["Concentrazione","COS"],
+  ["Conoscenze (Arcane)","INT"],["Conoscenze (Dungeon)","INT"],["Conoscenze (Geografia)","INT"],
+  ["Conoscenze (Natura)","INT"],["Conoscenze (Nobiltà e Regni)","INT"],["Conoscenze (Piani)","INT"],
+  ["Decifrare Scritture","INT"],["Diplomazia","CAR"],["Disattivare Congegni","DES"],["Equilibrio","DES"],
+  ["Falsificare","INT"],["Fuga Artistica","DES"],["Guarire","SAG"],["Intimidire","CAR"],["Intuizione","SAG"],
+  ["Muoversi Silenziosamente","DES"],["Nascondersi","DES"],["Nuotare","FOR"],["Osservare","SAG"],
+  ["Perform/Intrattenere (____)","CAR"],["Perform/Intrattenere (____)","CAR"],["Perform/Intrattenere (____)","CAR"],
+  ["Professione (____)","SAG"],["Professione (____)","SAG"],["Professione (____)","SAG"],
+  ["Raccogliere Informazioni","CAR"],["Rapidità di Mano","DES"],["Saltare","FOR"],["Sapienza Magica","INT"],
+  ["Scalare","FOR"],["Sopravvivenza","SAG"],["Utilizzare Corde","DES"],["Utilizzare Oggetti Magici","CAR"],["Valutare","INT"]
+];
+function buildSkills(){
+  const cont = document.getElementById("skillsContainer");
+  cont.innerHTML = "";
+  SKILLS.forEach((sk, idx) => {
+    const key = "skill_"+idx;
+    const wrap = document.createElement("div");
+    wrap.className = "skill";
+    const cb = document.createElement("input");
+    cb.type="checkbox"; cb.id=key+"_prof";
+    const name = document.createElement("input");
+    name.type="text"; name.id=key+"_name"; name.value = sk[0];
+    const stat = document.createElement("span");
+    stat.className="small"; stat.id=key+"_stat"; stat.textContent = sk[1];
+    const mod = document.createElement("span");
+    mod.className="small"; mod.id=key+"_mod"; mod.style.width="46px"; mod.style.textAlign="right"; mod.textContent="+0";
+    const total = document.createElement("span");
+    total.className="total"; total.id=key+"_tot"; total.textContent="+0";
+    wrap.append(cb,name,stat,mod,total);
+    cont.appendChild(wrap);
+  });
+}
+function saveAll(){
+  const data = {};
+  FIELDS.forEach(id => data[id] = document.getElementById(id)?.value ?? "");
+  SAVE_CHECKS.forEach(id => data[id] = document.getElementById(id)?.checked ?? false);
+  SKILLS.forEach((_, idx) => {
+    const key = "skill_"+idx;
+    data[key+"_prof"] = document.getElementById(key+"_prof")?.checked ?? false;
+    data[key+"_name"] = document.getElementById(key+"_name")?.value ?? "";
+  });
+  localStorage.setItem("sheet-5e-35-html", JSON.stringify(data));
+}
+function loadAll(){
+  const raw = localStorage.getItem("sheet-5e-35-html");
+  if(!raw) return;
+  try{
+    const data = JSON.parse(raw);
+    FIELDS.forEach(id => { if(document.getElementById(id)) document.getElementById(id).value = data[id] ?? document.getElementById(id).value; });
+    SAVE_CHECKS.forEach(id => { if(document.getElementById(id)) document.getElementById(id).checked = !!data[id]; });
+    SKILLS.forEach((_, idx) => {
+      const key = "skill_"+idx;
+      const cb = document.getElementById(key+"_prof"); if(cb) cb.checked = !!data[key+"_prof"];
+      const nm = document.getElementById(key+"_name"); if(nm && data[key+"_name"]) nm.value = data[key+"_name"];
+    });
+  }catch(e){}
+}
+function updateMods(){
+  const FOR = Number(document.getElementById("FOR").value||0);
+  const DES = Number(document.getElementById("DES").value||0);
+  const COS = Number(document.getElementById("COS").value||0);
+  const INT = Number(document.getElementById("INT").value||0);
+  const SAG = Number(document.getElementById("SAG").value||0);
+  const CAR = Number(document.getElementById("CAR").value||0);
+  const prof = Number(document.getElementById("prof").value||0);
+  const mFOR = Math.floor((FOR-10)/2), mDES = Math.floor((DES-10)/2), mCOS = Math.floor((COS-10)/2),
+        mINT = Math.floor((INT-10)/2), mSAG = Math.floor((SAG-10)/2), mCAR = Math.floor((CAR-10)/2);
+  document.getElementById("modFOR").textContent = (mFOR>=0?"+":"")+mFOR;
+  document.getElementById("modDES").textContent = (mDES>=0?"+":"")+mDES;
+  document.getElementById("modCOS").textContent = (mCOS>=0?"+":"")+mCOS;
+  document.getElementById("modINT").textContent = (mINT>=0?"+":"")+mINT;
+  document.getElementById("modSAG").textContent = (mSAG>=0?"+":"")+mSAG;
+  document.getElementById("modCAR").textContent = (mCAR>=0?"+":"")+mCAR;
+  const fort = mCOS + (document.getElementById("save_fort_prof").checked ? prof : 0);
+  const ref  = mDES + (document.getElementById("save_ref_prof").checked  ? prof : 0);
+  const will = mSAG + (document.getElementById("save_will_prof").checked ? prof : 0);
+  document.getElementById("save_fort").textContent = (fort>=0?"+":"")+fort;
+  document.getElementById("save_ref").textContent  = (ref>=0?"+":"")+ref;
+  document.getElementById("save_will").textContent = (will>=0?"+":"")+will;
+  const statMods = { "FOR": mFOR, "DES": mDES, "COS": mCOS, "INT": mINT, "SAG": mSAG, "CAR": mCAR };
+  SKILLS.forEach((sk, idx) => {
+    const key = "skill_"+idx;
+    const m = statMods[sk[1]] || 0;
+    const profOn = document.getElementById(key+"_prof").checked;
+    const tot = m + (profOn ? prof : 0);
+    const modSpan = document.getElementById(key+"_mod"); if(modSpan) modSpan.textContent = (m>=0?"+":"")+m;
+    const totSpan = document.getElementById(key+"_tot"); if(totSpan) totSpan.textContent = (tot>=0?"+":"")+tot;
+  });
+}
+document.getElementById("exportBtn").addEventListener("click", () => {
+  saveAll();
+  const data = localStorage.getItem("sheet-5e-35-html") || "{}";
+  const blob = new Blob([data], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const name = (document.getElementById("name").value || "personaggio").replace(/\s+/g,"_");
+  a.href=url; a.download = "scheda_5e_35_"+name+".json"; a.click();
+  URL.revokeObjectURL(url);
+});
+document.getElementById("importFile").addEventListener("change", (e) => {
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = (ev)=>{
+    try{
+      localStorage.setItem("sheet-5e-35-html", String(ev.target.result));
+      location.reload();
+    }catch(err){ alert("File non valido."); }
+  };
+  r.readAsText(f);
+});
+document.getElementById("printBtn").addEventListener("click", () => window.print());
+function init(){
+  buildSkills();
+  loadAll();
+  updateMods();
+  document.addEventListener("input", (e)=>{
+    if(e.target.matches("input, textarea, [contenteditable='true']")){
+      updateMods(); saveAll();
+    }
+  });
+  document.addEventListener("change", (e)=>{
+    if(e.target.type === "checkbox"){ updateMods(); saveAll(); }
+  });
+}
+init();
+</script>
+</body>
+</html>
